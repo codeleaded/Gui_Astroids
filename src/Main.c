@@ -7,8 +7,8 @@
 
 #define BulletSpeed     0.35f
 #define PlayerMaxSpeed  0.30f
-
 #define SCALE           1200.0f
+
 
 typedef struct Figure {
     Vec2 p;
@@ -63,12 +63,10 @@ Astroid Astroid_New(){
     Astroid_Ring(&a);
     return a;
 }
-
 void Astroid_Create(){
     Astroid a = Astroid_New();
     Vector_Push(&Astroids,&a);
 }
-
 char Astroid_Split(Astroid* a,int Index){
     a->r *= 0.5f;
     if(a->r<0.01f){
@@ -83,15 +81,12 @@ char Astroid_Split(Astroid* a,int Index){
     Vector_Push(&Astroids,&na);
     return 1;
 }
-
 void Bullet_Create(Ship* s){
     Vector_Push(&s->bullets,(Figure[]){ {{s->p.x + cosf(s->a - 3.1415f/2) * (s->r+0.01f),s->p.y + sinf(s->a - 3.1415f/2) * (s->r+0.01f)},{cosf(s->a - 3.1415f/2) * BulletSpeed,sinf(s->a - 3.1415f/2) * BulletSpeed},0.0025f} });
 }
-
 void Bullet_Render(Figure* b){
     RenderCircleWire(Vec2_Mulf(b->p,SCALE),b->r * SCALE,RED,1.0f);
 }
-
 void Astroid_Render(Astroid* a){
     M2x2 rot = M2x2_RotateZ(a->a);
     Vec2 p1 = *(Vec2*)Vector_Get(&a->points,0);
@@ -111,7 +106,6 @@ void Astroid_Render(Astroid* a){
     
     RenderLine(Vec2_Mulf(p1,SCALE),Vec2_Mulf(or,SCALE),YELLOW,1.0f);
 }
-
 void Ship_Render(Ship* s){
     Vec2 p1 = {         0.0f,-s->r * 0.66f };
     Vec2 p2 = { -s->r * 0.4f, s->r * 0.33f };
@@ -130,7 +124,6 @@ void Ship_Render(Ship* s){
     RenderLine(Vec2_Mulf(p2,SCALE),Vec2_Mulf(p3,SCALE),WHITE,1.0f);
     RenderLine(Vec2_Mulf(p3,SCALE),Vec2_Mulf(p1,SCALE),WHITE,1.0f);
 }
-
 void Figure_Update(void* f,double ElapsedTime){
     Figure* fig = (Figure*)f;
     fig->p = Vec2_Add(Vec2_Mulf(fig->v,ElapsedTime),fig->p);
@@ -167,14 +160,15 @@ void Update(AlxWindow* w){
         MyShip.v = Vec2_Add(Dir,MyShip.v);
     }
     if(Stroke(ALX_KEY_A).DOWN){
-        MyShip.a -= 1.5f * 3.14f * w->ElapsedTime;
+        //MyShip.a -= 1.5f * 3.14f * w->ElapsedTime;
     }
     if(Stroke(ALX_KEY_D).DOWN){
-        MyShip.a += 1.5f * 3.14f * w->ElapsedTime;
+        //MyShip.a += 1.5f * 3.14f * w->ElapsedTime;
     }
     if(Stroke(ALX_MOUSE_L).PRESSED){
         Bullet_Create(&MyShip);
     }
+    MyShip.a = Vec2_AngleOf(Vec2_Sub(Vec2_Divf(GetMouse(),SCALE),MyShip.p)) + F32_PI05;
 
     double ElapsedTime = (double)(Time_Nano()-LastSpawn) / 1E9;
     if(ElapsedTime>RespawnTime){
